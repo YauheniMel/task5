@@ -7,7 +7,9 @@ import ForwardToInboxIcon from '@mui/icons-material/ForwardToInbox';
 import classes from './HomePage.module.scss';
 import DialogModal from '../../components/DialogModal/DialogModal';
 
-const HomePage: FC<any> = function HomePage({ data, name }) {
+const HomePage: FC<any> = function HomePage({
+  data, name, sendMessage, id,
+}) {
   const [isOpen, setIsOpen] = React.useState(true);
 
   const handleClose = () => {
@@ -16,7 +18,13 @@ const HomePage: FC<any> = function HomePage({ data, name }) {
 
   return (
     <div>
-      <DialogModal data={data} isOpen={isOpen} close={handleClose} />
+      <DialogModal
+        id={id}
+        data={data}
+        isOpen={isOpen}
+        close={handleClose}
+        sendMessage={sendMessage}
+      />
       <AppBar position="static">
         <Toolbar className={classes.toolbar}>
           <div>

@@ -7,3 +7,8 @@ module.exports.createUser = (name, id) => `INSERT INTO users (
   '[]',
   '${id}'
 );`;
+
+module.exports.sendMessage = (id, JSON) => `
+  UPDATE users SET JSON = '${JSON}'
+  WHERE id = ${id};
+`;

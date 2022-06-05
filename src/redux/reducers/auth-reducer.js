@@ -36,6 +36,8 @@ function authReducer(state = initState, action) {
         ...action.data,
       };
 
+      console.log(stateCopy);
+
       return stateCopy;
     }
     default:
@@ -48,6 +50,15 @@ export const loginUserThunk = (name) => (dispatch) => requestAPI
   .then((data) => {
     console.log(data);
     dispatch(getDataAction({ id: data.id, db: JSON.parse(data.JSON) }));
+    dispatch(loginUserAction());
+  })
+  .catch((err) => alert(err));
+
+export const sendMessageThunk = (payload) => (dispatch) => requestAPI
+  .sendMessage(payload)
+  .then((data) => {
+    console.log(data);
+    dispatch(getDataAction({ id: payload.myId, db: JSON.parse(data.JSON) }));
     dispatch(loginUserAction());
   })
   .catch((err) => alert(err));
