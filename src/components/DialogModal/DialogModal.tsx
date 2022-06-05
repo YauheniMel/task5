@@ -4,8 +4,11 @@ import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import { TextareaAutosize, TextField } from '@mui/material';
 import InputUser from '../InputUser/InputUser';
+import ListComponent from '../List/List';
 
-const DialogModal: React.FC<any> = function ({ isOpen, close, users }) {
+const DialogModal: React.FC<any> = function ({ isOpen, close, data }) {
+  const [addressee, setAddressee] = React.useState<any>();
+
   return (
     <div>
       <Dialog
@@ -14,8 +17,9 @@ const DialogModal: React.FC<any> = function ({ isOpen, close, users }) {
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
-        <InputUser users={users} />
+        <InputUser data={data} setAddressee={setAddressee} />
         <TextField label="Theme" variant="standard" sx={{ m: 1 }} />
+        {addressee && <ListComponent data={addressee} />}
         <TextareaAutosize
           aria-label="empty textarea"
           placeholder="Message"

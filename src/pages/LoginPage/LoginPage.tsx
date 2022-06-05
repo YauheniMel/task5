@@ -1,44 +1,30 @@
-import React, { FC } from 'react';
-import { Button, TextField } from '@mui/material';
-import { NavLink } from 'react-router-dom';
-import styles from './LoginPage.module.scss';
+import * as React from 'react';
+import Button from '@mui/material/Button';
+import TextField from '@mui/material/TextField';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
+import classes from './LoginPage.module.scss';
 
-const LoginPage: FC<any> = function () {
+const LoginPage: React.FC<any> = function ({ login, name, createName }) {
   return (
-    <div className={styles.container}>
-      <div className={styles.wrapper}>
-        <h2>Welcome!</h2>
-      </div>
-      <form action="" className={styles.form}>
-        <fieldset className={styles.fieldset}>
-          <legend>Login form</legend>
+    <div className={classes.wrapper}>
+      <div className={classes.dialog}>
+        <DialogTitle>You must enter your name to log in.</DialogTitle>
+        <DialogContent>
           <TextField
-            required
-            label="Login"
-            name="login"
-            size="small"
-            fullWidth
             autoFocus
-          />
-          <TextField
-            required
-            label="Password"
-            type="password"
-            name="password"
+            label="Name"
             fullWidth
-            size="small"
-            autoComplete="current-password"
+            variant="standard"
+            value={name}
+            onChange={createName}
           />
-          <div className={styles.action}>
-            <Button type="submit" variant="contained">
-              Authorization
-            </Button>
-            <NavLink className="link" to="/signup">
-              SignUp
-            </NavLink>
-          </div>
-        </fieldset>
-      </form>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => login(name)}>Enter</Button>
+        </DialogActions>
+      </div>
     </div>
   );
 };
