@@ -1,0 +1,38 @@
+@import "./styles/normalize";
+@import "./styles/variables";
+
+html {
+  font-size: 16px;
+}
+
+html,
+body,
+#root,
+.App {
+  height: 100%;
+}
+
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  background-color: $white;
+}
+
+.container {
+  max-width: 1440px;
+  margin: 0 auto;
+}
+
+input,
+button {
+  height: 1.7rem;
+}
+
+.link {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: $text_secondary-color-light;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
