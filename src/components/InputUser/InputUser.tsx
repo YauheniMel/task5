@@ -10,24 +10,32 @@ import Autocomplete, { createFilterOptions } from '@mui/material/Autocomplete';
 
 const filter = createFilterOptions<any>();
 
-const InputUser: React.FC<any> = function ({ data, setAddressee }) {
-  const [value, setValue] = React.useState<any | null>(null);
+const InputUser: React.FC<any> = function ({
+  data,
+  setAddressee,
+  setValue,
+  value,
+}) {
   const [open, toggleOpen] = React.useState(false);
 
   const [dialogValue, setDialogValue] = React.useState({
     name: '',
+    id: '',
   });
 
   const handleClose = () => {
     setDialogValue({
       name: '',
+      id: '',
     });
     toggleOpen(false);
   };
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+
     setValue({
+      id: dialogValue.id,
       name: dialogValue.name,
     });
     handleClose();
@@ -46,12 +54,14 @@ const InputUser: React.FC<any> = function ({ data, setAddressee }) {
             setTimeout(() => {
               toggleOpen(true);
               setDialogValue({
+                ...dialogValue,
                 name: newValue,
               });
             });
           } else if (newValue && newValue.inputValue) {
             toggleOpen(true);
             setDialogValue({
+              ...dialogValue,
               name: newValue.inputValue,
             });
           } else {
@@ -81,7 +91,7 @@ const InputUser: React.FC<any> = function ({ data, setAddressee }) {
           if (option.inputValue) {
             return option.inputValue;
           }
-          return option.name;
+          return option.name; //
         }}
         selectOnFocus
         clearOnBlur

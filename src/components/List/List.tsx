@@ -17,12 +17,12 @@ const ListComponent: React.FC<any> = function ({ data }) {
       }}
       subheader={<li />}
     >
-      {data.send.map((info: any, idx: number) => (
+      {data.sent.map((info: any, idx: number) => (
         // eslint-disable-next-line react/no-array-index-key
         <li key={`section-${idx}`}>
           <ul>
             <ListSubheader>{`${info.date}`}</ListSubheader>
-            {data.send.map((item: any, i: any) => (
+            {data.sent.map((item: any, i: any) => (
               // eslint-disable-next-line react/no-array-index-key
               <ListItem key={`item-${item.date}-${i}`}>
                 <ListItemText primary={`Item ${item.content}`} />

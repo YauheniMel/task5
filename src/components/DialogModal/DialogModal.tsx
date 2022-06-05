@@ -6,8 +6,26 @@ import { TextareaAutosize, TextField } from '@mui/material';
 import InputUser from '../InputUser/InputUser';
 import ListComponent from '../List/List';
 
-const DialogModal: React.FC<any> = function ({ isOpen, close, data }) {
+const DialogModal: React.FC<any> = function ({
+  isOpen,
+  close,
+  data,
+  sendMessage,
+  id,
+}) {
   const [addressee, setAddressee] = React.useState<any>();
+  const [value, setValue] = React.useState<any | null>(null);
+
+  function handleSubmit(e: any) {
+    e.preventDefault();
+
+    sendMessage({
+      myId: id,
+      id: value.id,
+      theme: e.target[2].value,
+      content: e.target[3].value,
+    });
+  }
 
   return (
     <div>
@@ -17,26 +35,34 @@ const DialogModal: React.FC<any> = function ({ isOpen, close, data }) {
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
-        <InputUser data={data} setAddressee={setAddressee} />
-        <TextField label="Theme" variant="standard" sx={{ m: 1 }} />
-        {addressee && <ListComponent data={addressee} />}
-        <TextareaAutosize
-          aria-label="empty textarea"
-          placeholder="Message"
-          style={{
-            resize: 'vertical',
-            width: 400,
-            minHeight: 100,
-            padding: 10,
-            margin: '10px',
-          }}
-        />
-        <DialogActions>
-          <Button onClick={close}>Cancel</Button>
-          <Button variant="contained" onClick={close} autoFocus>
-            Send
-          </Button>
-        </DialogActions>
+        <form action="" onSubmit={handleSubmit}>
+          <InputUser
+            data={data}
+            setAddressee={setAddressee}
+            setValue={setValue}
+            value={value}
+          />
+          <TextField required label="Theme" variant="standard" sx={{ m: 1 }} />
+          {addressee && <ListComponent data={addressee} />}
+          <TextareaAutosize
+            aria-label="empty textarea"
+            placeholder="Message"
+            required
+            style={{
+              resize: 'vertical',
+              width: 400,
+              minHeight: 100,
+              padding: 10,
+              margin: '10px',
+            }}
+          />
+          <DialogActions>
+            <Button onClick={close}>Cancel</Button>
+            <Button type="submit" variant="contained">
+              Send
+            </Button>
+          </DialogActions>
+        </form>
       </Dialog>
     </div>
   );

@@ -76,6 +76,71 @@ router.put('/api/login', timeout, async (req, res) => {
   }
 });
 
+router.post('/api/send', timeout, async (req, res) => {
+  const {
+    id, myId, theme, content,
+  } = req.body;
+
+  try {
+    // eslint-disable-next-line consistent-return
+    connection.query('SELECT * FROM users', (err, results) => {
+      if (err) throw new Error(err);
+
+      const users = Object.values(JSON.parse(JSON.stringify(results)));
+
+      // eslint-disable-next-line eqeqeq
+      const me = users.find((user) => user.id == myId);
+      // eslint-disable-next-line eqeqeq
+      const addressee = users.find((user) => user.id == id);
+
+      const myData = JSON.parse(me.JSON).map((item) => {
+        // eslint-disable-next-line eqeqeq
+        if (item.id == id) {
+          item.sent.push({
+            date: +new Date(),
+            state: 'untouched',
+            theme,
+            content,
+          });
+        }
+
+        return item;
+      });
+
+      const addresseeData = JSON.parse(addressee.JSON).map((item) => {
+        // eslint-disable-next-line eqeqeq
+        if (item.id == myId) {
+          item.received.push({
+            date: +new Date(),
+            state: 'untouched',
+            theme,
+            content,
+          });
+        }
+
+        return item;
+      });
+
+      const myJSON = JSON.stringify([...myData]);
+      const addresseeJSON = JSON.stringify([...addresseeData]);
+      console.log(myData);
+      console.log(addresseeData);
+
+      connection.query(
+        `${dbService.sendMessage(myId, myJSON)}
+        ${dbService.sendMessage(id, addresseeJSON)}`,
+        (error) => {
+          if (error) throw new Error(error);
+
+          return res.status(200).json(myData);
+        },
+      );
+    });
+  } catch (err) {
+    res.status(400).send(err);
+  }
+});
+
 app.use(bodyParser.json());
 
 app.use(router);
