@@ -1,18 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import React, { FC, useEffect } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
 import { createTheme, ThemeProvider } from '@mui/material';
+import { connect } from 'react-redux';
 import HomePageContainer from './pages/HomePage/HomePageContainer';
 import LoginPageContainer from './pages/LoginPage/LoginPageContainer';
-import RegisterPageContainer from './pages/RegisterPage/RegisterPageContainer';
 
-function App() {
-  const [isAuth, setIsAuth] = useState(false);
-
+const App: FC<any> = function ({ isAuth }) {
   useEffect(() => {}, [isAuth]);
-
-  function toggle() {
-    setIsAuth((value) => !value);
-  }
 
   const theme = createTheme({
     palette: {
@@ -41,24 +35,19 @@ function App() {
             }
           />
           <Route
-            path="signup"
-            element={
-              isAuth ? <Navigate to="/" replace /> : <RegisterPageContainer />
-            }
-          />
-          <Route
             path="home"
             element={
               !isAuth ? <Navigate to="/" replace /> : <HomePageContainer />
             }
           />
         </Routes>
-        <button type="button" onClick={toggle}>
-          Toggle Auth
-        </button>
       </ThemeProvider>
     </div>
   );
-}
+};
 
-export default App;
+const mapStateToProps = (state: any) => ({
+  isAuth: state.auth.isAuth,
+});
+
+export default connect(mapStateToProps)(App);
