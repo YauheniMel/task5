@@ -12,6 +12,7 @@ const DialogModal: React.FC<any> = function ({
   data,
   sendMessage,
   id,
+  users,
 }) {
   const [addressee, setAddressee] = React.useState<any>();
   const [value, setValue] = React.useState<any | null>(null);
@@ -41,9 +42,16 @@ const DialogModal: React.FC<any> = function ({
             setAddressee={setAddressee}
             setValue={setValue}
             value={value}
+            users={users}
           />
           <TextField required label="Theme" variant="standard" sx={{ m: 1 }} />
-          {addressee && <ListComponent data={addressee} />}
+          {addressee && (
+            <ListComponent
+              users={users}
+              data={data.find((user: any) => user.id === addressee.id)}
+            />
+          )}
+
           <TextareaAutosize
             aria-label="empty textarea"
             placeholder="Message"

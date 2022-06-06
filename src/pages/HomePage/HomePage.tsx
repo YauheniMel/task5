@@ -8,7 +8,11 @@ import classes from './HomePage.module.scss';
 import DialogModal from '../../components/DialogModal/DialogModal';
 
 const HomePage: FC<any> = function HomePage({
-  data, name, sendMessage, id,
+  data,
+  name,
+  sendMessage,
+  id,
+  users,
 }) {
   const [isOpen, setIsOpen] = React.useState(true);
 
@@ -21,6 +25,7 @@ const HomePage: FC<any> = function HomePage({
       <DialogModal
         id={id}
         data={data}
+        users={users}
         isOpen={isOpen}
         close={handleClose}
         sendMessage={sendMessage}

@@ -51,11 +51,25 @@ router.put('/api/login', timeout, async (req, res) => {
 
       const users = Object.values(JSON.parse(JSON.stringify(results)));
 
+      const arr = [];
+
+      // eslint-disable-next-line array-callback-return
+      users.forEach((user) => {
+        arr.push({ name: user.name, id: user.id });
+      });
+
       let targetUser = users.find((user) => user.name === name);
 
       if (!targetUser) {
+        const id = +new Date();
+        arr.push({ name, id });
+
         connection.query(
-          `${dbService.createUser(name, +new Date())} SELECT * FROM users`,
+          `${dbService.createUser(
+            name,
+            id,
+            JSON.stringify(arr),
+          )} SELECT * FROM users`,
           (error, r) => {
             if (error) throw new Error(error);
 
@@ -68,7 +82,22 @@ router.put('/api/login', timeout, async (req, res) => {
           },
         );
       } else {
-        return res.status(200).json(targetUser);
+        connection.query(
+          `${dbService.updateUsers(
+            targetUser.id,
+            JSON.stringify(arr),
+          )} SELECT * FROM users`,
+          (error, r) => {
+            if (error) throw new Error(error);
+
+            // eslint-disable-next-line @typescript-eslint/no-shadow
+            const users = Object.values(JSON.parse(JSON.stringify(r)));
+
+            targetUser = users[1].find((user) => user.name === name);
+
+            return res.status(200).json(targetUser);
+          },
+        );
       }
     });
   } catch (err) {
@@ -93,42 +122,94 @@ router.post('/api/send', timeout, async (req, res) => {
       // eslint-disable-next-line eqeqeq
       const addressee = users.find((user) => user.id == id);
 
-      const myData = JSON.parse(me.JSON).map((item) => {
-        // eslint-disable-next-line eqeqeq
-        if (item.id == id) {
-          item.sent.push({
-            date: +new Date(),
-            state: 'untouched',
-            theme,
-            content,
-          });
-        }
+      const myData = JSON.parse(me.JSON);
 
-        return item;
-      });
+      // eslint-disable-next-line eqeqeq
+      const i = myData.findIndex((item) => item.id == id);
+      // eslint-disable-next-line eqeqeq
+      if (i == '-1') {
+        myData.push({
+          id,
+          sent: [
+            {
+              date: +new Date(),
+              state: 'untouched',
+              theme,
+              content,
+            },
+          ],
+        });
+      } else {
+        if (!myData[i].sent) myData[i].sent = [];
+        myData[i].sent.push({
+          date: +new Date(),
+          state: 'untouched',
+          theme,
+          content,
+        });
+      }
 
-      const addresseeData = JSON.parse(addressee.JSON).map((item) => {
-        // eslint-disable-next-line eqeqeq
-        if (item.id == myId) {
-          item.received.push({
-            date: +new Date(),
-            state: 'untouched',
-            theme,
-            content,
-          });
-        }
+      const addresseeData = JSON.parse(addressee.JSON);
 
-        return item;
-      });
+      // eslint-disable-next-line eqeqeq
+      const idx = addresseeData.findIndex((item) => item.id == myId);
+      // eslint-disable-next-line eqeqeq
+      if (idx == '-1') {
+        addresseeData.push({
+          id: myId,
+          received: [
+            {
+              date: +new Date(),
+              state: 'untouched',
+              theme,
+              content,
+            },
+          ],
+        });
+      } else {
+        if (!addresseeData[idx].received) addresseeData[idx].received = [];
+        addresseeData[idx].received.push({
+          date: +new Date(),
+          state: 'untouched',
+          theme,
+          content,
+        });
+      }
+
+      if (!myData[0]) {
+        myData.push({
+          id,
+          sent: [
+            {
+              date: +new Date(),
+              state: 'untouched',
+              theme,
+              content,
+            },
+          ],
+        });
+      }
+
+      if (!addresseeData[0]) {
+        addresseeData.push({
+          id: myId,
+          received: [
+            {
+              date: +new Date(),
+              state: 'untouched',
+              theme,
+              content,
+            },
+          ],
+        });
+      }
 
       const myJSON = JSON.stringify([...myData]);
       const addresseeJSON = JSON.stringify([...addresseeData]);
-      console.log(myData);
-      console.log(addresseeData);
 
       connection.query(
-        `${dbService.sendMessage(myId, myJSON)}
-        ${dbService.sendMessage(id, addresseeJSON)}`,
+        `${dbService.sendMessage(id, addresseeJSON)}
+        ${dbService.sendMessage(myId, myJSON)}`,
         (error) => {
           if (error) throw new Error(error);
 

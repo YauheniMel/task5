@@ -6,32 +6,36 @@ import { List } from '@mui/material';
 
 const ListComponent: React.FC<any> = function ({ data }) {
   return (
-    <List
-      sx={{
-        width: '100%',
-        bgcolor: 'background.paper',
-        position: 'relative',
-        overflow: 'auto',
-        maxHeight: 200,
-        '& ul': { padding: 0 },
-      }}
-      subheader={<li />}
-    >
-      {data.sent.map((info: any, idx: number) => (
-        // eslint-disable-next-line react/no-array-index-key
-        <li key={`section-${idx}`}>
-          <ul>
-            <ListSubheader>{`${info.date}`}</ListSubheader>
-            {data.sent.map((item: any, i: any) => (
-              // eslint-disable-next-line react/no-array-index-key
-              <ListItem key={`item-${item.date}-${i}`}>
-                <ListItemText primary={`Item ${item.content}`} />
-              </ListItem>
-            ))}
-          </ul>
-        </li>
-      ))}
-    </List>
+    <div>
+      {data?.sent && (
+        <List
+          sx={{
+            width: '100%',
+            bgcolor: 'background.paper',
+            position: 'relative',
+            overflow: 'auto',
+            maxHeight: 200,
+            '& ul': { padding: 0 },
+          }}
+          subheader={<li />}
+        >
+          {data.sent.map((info: any, idx: number) => (
+            // eslint-disable-next-line react/no-array-index-key
+            <li key={`section-${idx}`}>
+              <ul>
+                <ListSubheader>{`${info.date}`}</ListSubheader>
+                {data.sent.map((item: any, i: any) => (
+                  // eslint-disable-next-line react/no-array-index-key
+                  <ListItem key={`item-${item.date}-${i}`}>
+                    <ListItemText primary={`Item ${item.content}`} />
+                  </ListItem>
+                ))}
+              </ul>
+            </li>
+          ))}
+        </List>
+      )}
+    </div>
   );
 };
 
