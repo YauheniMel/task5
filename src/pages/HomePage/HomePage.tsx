@@ -1,11 +1,11 @@
 import {
-  AppBar, Badge, IconButton, Toolbar, Typography,
+  AppBar, IconButton, Toolbar, Typography,
 } from '@mui/material';
 import React, { FC } from 'react';
-import MailIcon from '@mui/icons-material/Mail';
 import ForwardToInboxIcon from '@mui/icons-material/ForwardToInbox';
 import classes from './HomePage.module.scss';
 import DialogModal from '../../components/DialogModal/DialogModal';
+import NavMessages from '../../components/BoxMessage/NavMessage';
 
 const HomePage: FC<any> = function HomePage({
   data,
@@ -14,7 +14,7 @@ const HomePage: FC<any> = function HomePage({
   id,
   users,
 }) {
-  function getRecievedMessages(arr: any): number {
+  function countRecievedMessages(arr: any): number {
     let counter = 0;
     if (!arr.length) return counter;
     arr.forEach((item: any) => {
@@ -35,12 +35,24 @@ const HomePage: FC<any> = function HomePage({
     return counter;
   }
 
+  function prepareMessagesInfo(arr: any) {
+    return arr.map((item: any) => {
+      // eslint-disable-next-line no-param-reassign
+      item.name = users.find((item2: any) => +item2.id === +item.id).name;
+      // eslint-disable-next-line eqeqeq
+      if (item.id == id) {
+        // eslint-disable-next-line no-param-reassign
+        item.received = item.sent;
+      }
+      return item;
+    });
+  }
+
   const [isOpen, setIsOpen] = React.useState(true);
 
   const handleClose = () => {
     setIsOpen(false);
   };
-
   return (
     <div>
       <DialogModal
@@ -63,14 +75,11 @@ const HomePage: FC<any> = function HomePage({
           </div>
           <div>
             <div>
-              <IconButton aria-label="show 4 new mails" color="inherit">
-                <Badge
-                  badgeContent={getRecievedMessages(data)}
-                  color="secondary"
-                >
-                  <MailIcon />
-                </Badge>
-              </IconButton>
+              <NavMessages
+                count={countRecievedMessages(data)}
+                messages={prepareMessagesInfo(data)}
+                id={id}
+              />
             </div>
           </div>
         </Toolbar>
