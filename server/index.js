@@ -208,8 +208,8 @@ router.post('/api/send', timeout, async (req, res) => {
       const addresseeJSON = JSON.stringify([...addresseeData]);
 
       connection.query(
-        `${dbService.sendMessage(id, addresseeJSON)}
-        ${dbService.sendMessage(myId, myJSON)}`,
+        `${dbService.updateDb(id, addresseeJSON)}
+        ${dbService.updateDb(myId, myJSON)}`,
         (error) => {
           if (error) throw new Error(error);
 
@@ -219,6 +219,24 @@ router.post('/api/send', timeout, async (req, res) => {
     });
   } catch (err) {
     res.status(400).send(err);
+  }
+});
+
+router.put('/api/touched', timeout, async (req, res) => {
+  const { JSON, id } = req.body;
+  try {
+    connection.query(
+      `${dbService.updateDb(id, JSON)} SELECT * FROM users`,
+      (error) => {
+        if (error) throw new Error(error);
+
+        // eslint-disable-next-line @typescript-eslint/no-shadow
+
+        return res.status(200).json('Set touched');
+      },
+    );
+  } catch (error) {
+    res.status(400).send(error);
   }
 });
 

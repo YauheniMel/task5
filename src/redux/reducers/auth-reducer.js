@@ -68,4 +68,11 @@ export const sendMessageThunk = (payload) => (dispatch) => requestAPI
   })
   .catch((err) => alert(err));
 
+export const setTouchedMsgThunk = (payload) => () => requestAPI
+  .sendTouchedMsg(payload)
+  .then((data) => {
+    console.log(data);
+  })
+  .catch((err) => alert(err));
+
 export default authReducer;

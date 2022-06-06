@@ -7,6 +7,9 @@ const requestAPI = {
   sendMessage(data) {
     return axios.post('/api/send', data).then((response) => response.data);
   },
+  sendTouchedMsg(data) {
+    return axios.put('/api/touched', data).then((response) => response.data);
+  },
 };
 
 export default requestAPI;

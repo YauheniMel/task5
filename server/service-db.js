@@ -10,7 +10,7 @@ module.exports.createUser = (name, id, users) => `INSERT INTO users (
   '${users}'
 );`;
 
-module.exports.sendMessage = (id, JSON) => `
+module.exports.updateDb = (id, JSON) => `
   UPDATE users SET JSON = '${JSON}'
   WHERE id = ${id};
 `;
