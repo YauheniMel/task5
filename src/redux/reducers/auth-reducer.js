@@ -9,6 +9,7 @@ const initState = {
   name: '',
   db: [],
   id: '',
+  users: [],
 };
 
 // eslint-disable-next-line @typescript-eslint/default-param-last
@@ -36,8 +37,6 @@ function authReducer(state = initState, action) {
         ...action.data,
       };
 
-      console.log(stateCopy);
-
       return stateCopy;
     }
     default:
@@ -49,7 +48,13 @@ export const loginUserThunk = (name) => (dispatch) => requestAPI
   .login(name)
   .then((data) => {
     console.log(data);
-    dispatch(getDataAction({ id: data.id, db: JSON.parse(data.JSON) }));
+    dispatch(
+      getDataAction({
+        id: data.id,
+        db: JSON.parse(data.JSON),
+        users: JSON.parse(data.users),
+      }),
+    );
     dispatch(loginUserAction());
   })
   .catch((err) => alert(err));

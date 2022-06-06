@@ -11,10 +11,10 @@ import Autocomplete, { createFilterOptions } from '@mui/material/Autocomplete';
 const filter = createFilterOptions<any>();
 
 const InputUser: React.FC<any> = function ({
-  data,
   setAddressee,
   setValue,
   value,
+  users,
 }) {
   const [open, toggleOpen] = React.useState(false);
 
@@ -82,7 +82,7 @@ const InputUser: React.FC<any> = function ({
           return filtered;
         }}
         id="free-solo-dialog-demo"
-        options={data}
+        options={users}
         getOptionLabel={(option) => {
           // e.g value selected with enter, right from the input
           if (typeof option === 'string') {

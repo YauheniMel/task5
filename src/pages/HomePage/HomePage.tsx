@@ -8,8 +8,33 @@ import classes from './HomePage.module.scss';
 import DialogModal from '../../components/DialogModal/DialogModal';
 
 const HomePage: FC<any> = function HomePage({
-  data, name, sendMessage, id,
+  data,
+  name,
+  sendMessage,
+  id,
+  users,
 }) {
+  function getRecievedMessages(arr: any): number {
+    let counter = 0;
+    if (!arr.length) return counter;
+    arr.forEach((item: any) => {
+      // eslint-disable-next-line eqeqeq
+      if (item.id == id) {
+        counter += item.sent.filter(
+          (msg: any) => msg.state === 'untouched',
+        ).length;
+      }
+
+      if (item.received) {
+        counter += item.received.filter(
+          (msg: any) => msg.state === 'untouched',
+        ).length;
+      }
+    });
+
+    return counter;
+  }
+
   const [isOpen, setIsOpen] = React.useState(true);
 
   const handleClose = () => {
@@ -21,6 +46,7 @@ const HomePage: FC<any> = function HomePage({
       <DialogModal
         id={id}
         data={data}
+        users={users}
         isOpen={isOpen}
         close={handleClose}
         sendMessage={sendMessage}
@@ -38,7 +64,10 @@ const HomePage: FC<any> = function HomePage({
           <div>
             <div>
               <IconButton aria-label="show 4 new mails" color="inherit">
-                <Badge badgeContent={4} color="secondary">
+                <Badge
+                  badgeContent={getRecievedMessages(data)}
+                  color="secondary"
+                >
                   <MailIcon />
                 </Badge>
               </IconButton>
