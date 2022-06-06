@@ -13,6 +13,7 @@ const HomePage: FC<any> = function HomePage({
   sendMessage,
   id,
   users,
+  setTouchedMsg,
 }) {
   function countRecievedMessages(arr: any): number {
     let counter = 0;
@@ -33,6 +34,27 @@ const HomePage: FC<any> = function HomePage({
     });
 
     return counter;
+  }
+
+  function setTouched(newData: any) {
+    // eslint-disable-next-line array-callback-return
+    const db = data.map((elem: any) => {
+      if (+elem.id === +newData.id) {
+        const n = newData.received.map((msg: any) => {
+          // eslint-disable-next-line no-param-reassign
+          msg.state = 'touched';
+          return msg;
+        });
+        // eslint-disable-next-line no-param-reassign
+        elem.received = n;
+      }
+      return elem;
+    });
+    console.log(db);
+
+    setTouchedMsg({ id, JSON: JSON.stringify(db) });
+
+    // setTouchedMsg({ id });
   }
 
   function prepareMessagesInfo(arr: any) {
@@ -79,6 +101,8 @@ const HomePage: FC<any> = function HomePage({
                 count={countRecievedMessages(data)}
                 messages={prepareMessagesInfo(data)}
                 id={id}
+                // eslint-disable-next-line react/jsx-no-bind
+                setTouched={setTouched}
               />
             </div>
           </div>

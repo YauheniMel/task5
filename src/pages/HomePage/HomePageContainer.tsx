@@ -1,6 +1,9 @@
 import React, { FC } from 'react';
 import { connect } from 'react-redux';
-import { sendMessageThunk } from '../../redux/reducers/auth-reducer';
+import {
+  sendMessageThunk,
+  setTouchedMsgThunk,
+} from '../../redux/reducers/auth-reducer';
 import HomePage from './HomePage';
 
 const HomePageContainer: FC<any> = function ({
@@ -9,6 +12,7 @@ const HomePageContainer: FC<any> = function ({
   sendMessage,
   id,
   users,
+  setTouchedMsg,
 }) {
   return (
     <HomePage
@@ -17,6 +21,7 @@ const HomePageContainer: FC<any> = function ({
       sendMessage={sendMessage}
       id={id}
       users={users}
+      setTouchedMsg={setTouchedMsg}
     />
   );
 };
@@ -29,6 +34,7 @@ const mapStateToProps = (state: any) => ({
 });
 const mapDispatchToProps = (dispatch: any) => ({
   sendMessage: (data: any) => dispatch(sendMessageThunk(data)),
+  setTouchedMsg: (data: any) => dispatch(setTouchedMsgThunk(data)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(HomePageContainer);

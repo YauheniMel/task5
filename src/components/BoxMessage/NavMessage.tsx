@@ -7,7 +7,11 @@ import { Badge, IconButton } from '@mui/material';
 import MailIcon from '@mui/icons-material/Mail';
 import ModalComponent from '../Modal/Modal';
 
-const NavMessages: React.FC<any> = function ({ messages = [], count }) {
+const NavMessages: React.FC<any> = function ({
+  messages = [],
+  count,
+  setTouched,
+}) {
   const [isOpen, setIsOpen] = React.useState(false);
   const [open, setOpen] = React.useState<boolean>();
   const [newMessages, setNewMessages] = React.useState();
@@ -20,6 +24,8 @@ const NavMessages: React.FC<any> = function ({ messages = [], count }) {
       return name.toUpperCase() === e.target.innerText;
     });
     setNewMessages(msg);
+
+    setTouched(msg);
   };
   const handleClose = () => setOpen(false);
 
