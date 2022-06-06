@@ -22,7 +22,7 @@
         "@typescript-eslint"
     ],
     "rules": {
-        "react/jsx-no-bind": "off",
+        "eqeqeq":"off",
         "react/jsx-filename-extension": [1, { "extensions": [".ts", ".tsx"] }]
     }
 }
