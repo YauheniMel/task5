@@ -48,7 +48,8 @@ const DialogModal: React.FC<any> = function ({
           {addressee && (
             <ListComponent
               users={users}
-              data={data.find((user: any) => user.id === addressee.id)}
+              // eslint-disable-next-line eqeqeq
+              data={data.find((user: any) => user.id == addressee.id)}
             />
           )}
 
