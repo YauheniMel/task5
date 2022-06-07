@@ -3,12 +3,15 @@ const express = require('express');
 const socketIo = require('socket.io');
 const http = require('http');
 const { Router } = require('express');
+// eslint-disable-next-line import/order
 const mysql = require('mysql');
+const path = require('path');
 const dbService = require('./service-db');
 
 const port = process.env.PORT || 5000;
 
 const app = express();
+
 const server = http.createServer(app);
 
 const io = socketIo(server, {
@@ -27,10 +30,6 @@ app.use(
   }),
 );
 
-const timeout = (req, res, next) => {
-  setTimeout(() => next(), 500);
-};
-
 const connection = mysql.createConnection({
   host: 'localhost',
   user: 'root',
@@ -41,7 +40,7 @@ const connection = mysql.createConnection({
 
 const router = Router();
 
-router.put('/api/login', timeout, async (req, res) => {
+router.put('/api/login', async (req, res) => {
   const { name } = req.body;
 
   try {
@@ -69,16 +68,23 @@ router.put('/api/login', timeout, async (req, res) => {
             name,
             id,
             JSON.stringify(arr),
+          )}${dbService.updateListUsers(
+            JSON.stringify(arr),
           )} SELECT * FROM users`,
-          (error, r) => {
+          (error) => {
             if (error) throw new Error(error);
 
-            // eslint-disable-next-line @typescript-eslint/no-shadow
-            const users = Object.values(JSON.parse(JSON.stringify(r)));
+            connection.query('SELECT * FROM users', (e, r) => {
+              if (e) throw new Error(e);
 
-            targetUser = users[1].find((user) => user.name === name);
+              const newUsers = Object.values(JSON.parse(JSON.stringify(r)));
 
-            return res.status(200).json(targetUser);
+              targetUser = newUsers.find((user) => user.name === name);
+
+              io.to('update').emit('users', targetUser.users);
+
+              return res.status(200).json(targetUser);
+            });
           },
         );
       } else {
@@ -94,7 +100,6 @@ router.put('/api/login', timeout, async (req, res) => {
             const users = Object.values(JSON.parse(JSON.stringify(r)));
 
             targetUser = users[1].find((user) => user.name === name);
-
             return res.status(200).json(targetUser);
           },
         );
@@ -105,7 +110,7 @@ router.put('/api/login', timeout, async (req, res) => {
   }
 });
 
-router.post('/api/send', timeout, async (req, res) => {
+router.post('/api/send', async (req, res) => {
   const {
     id, myId, theme, content,
   } = req.body;
@@ -213,6 +218,16 @@ router.post('/api/send', timeout, async (req, res) => {
         (error) => {
           if (error) throw new Error(error);
 
+          connection.query('SELECT * FROM users', (e, r) => {
+            if (e) throw new Error(e);
+
+            const newUsers = Object.values(JSON.parse(JSON.stringify(r)));
+
+            const newTargetUser = newUsers.find((user) => +user.id === +id);
+
+            io.to('update').emit('db', newTargetUser.JSON);
+          });
+
           return res.status(200).json(myData);
         },
       );
@@ -222,7 +237,7 @@ router.post('/api/send', timeout, async (req, res) => {
   }
 });
 
-router.put('/api/touched', timeout, async (req, res) => {
+router.put('/api/touched', async (req, res) => {
   const { JSON, id } = req.body;
   try {
     connection.query(
@@ -230,14 +245,15 @@ router.put('/api/touched', timeout, async (req, res) => {
       (error) => {
         if (error) throw new Error(error);
 
-        // eslint-disable-next-line @typescript-eslint/no-shadow
-
         return res.status(200).json('Set touched');
       },
     );
   } catch (error) {
     res.status(400).send(error);
   }
+});
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../', 'public', 'index.html'));
 });
 
 app.use(bodyParser.json());

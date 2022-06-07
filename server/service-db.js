@@ -19,3 +19,8 @@ module.exports.updateUsers = (id, JSON) => `
   UPDATE users SET users = '${JSON}'
   WHERE id = ${id};
 `;
+
+module.exports.updateListUsers = (users) => `
+  SET SQL_SAFE_UPDATES = 0;
+  UPDATE users SET users = '${users}';
+`;
