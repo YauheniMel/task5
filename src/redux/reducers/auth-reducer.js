@@ -47,7 +47,6 @@ function authReducer(state = initState, action) {
 export const loginUserThunk = (name) => (dispatch) => requestAPI
   .login(name)
   .then((data) => {
-    console.log(data);
     dispatch(
       getDataAction({
         id: data.id,
@@ -62,7 +61,6 @@ export const loginUserThunk = (name) => (dispatch) => requestAPI
 export const sendMessageThunk = (payload) => (dispatch) => requestAPI
   .sendMessage(payload)
   .then((data) => {
-    console.log(data);
     dispatch(getDataAction({ id: payload.myId, db: JSON.parse(data.JSON) }));
     dispatch(loginUserAction());
   })
@@ -71,7 +69,10 @@ export const sendMessageThunk = (payload) => (dispatch) => requestAPI
 export const setTouchedMsgThunk = (payload) => () => requestAPI
   .sendTouchedMsg(payload)
   .then((data) => {
-    console.log(data);
+    const [newData] = JSON.parse(data);
+    getDataAction({
+      db: newData,
+    });
   })
   .catch((err) => alert(err));
 

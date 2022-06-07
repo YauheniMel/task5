@@ -26,30 +26,23 @@ const HomePageContainer: FC<any> = function ({
     socket.on('users', (data: any) => setNewUsers(data));
     // eslint-disable-next-line @typescript-eslint/no-shadow
     socket.on('db', (data: any) => setNewData(data));
-    // if (newUsers) {
+    // eslint-disable-next-line @typescript-eslint/no-shadow
+    socket.on('me', (data: any) => {
+      const { id: resId, JSON: json } = JSON.parse(data);
 
-    console.log(`SENT ${newData}`);
-    console.log(`LOGIN ${newUsers}`);
-    //   const [targetUser] = JSON.parse(newUsers).filter(
-    //     (user: UserType) => user.id === id,
-    //   );
-    //   updateUsers(
-    //     JSON.parse(newUsers).filter((user: UserType) => user.id !== id),
-    //   );
-    //   if (!targetUser) {
-    //     // eslint-disable-next-line @typescript-eslint/no-use-before-define
-    //     window.addEventListener('click', handlePolicy, {
-    //       capture: true,
-    //       once: true,
-    //     });
-    //   } else if (targetUser.state === 'blocked') {
-    //     // eslint-disable-next-line @typescript-eslint/no-use-before-define
-    //     window.addEventListener('click', handlePolicy, {
-    //       capture: true,
-    //       once: true,
-    //     });
-    //   }
-    // }
+      if (+resId === +id) {
+        setNewData(json);
+      }
+    });
+    // eslint-disable-next-line @typescript-eslint/no-shadow
+    socket.on('addressee', (data: any) => {
+      const { id: resId, JSON: json } = JSON.parse(data);
+
+      if (+resId === +id) {
+        setNewData(json);
+      }
+    });
+
     if (newData) {
       getData({ db: JSON.parse(newData) });
     } else if (newUsers) {

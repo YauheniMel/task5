@@ -223,12 +223,20 @@ router.post('/api/send', async (req, res) => {
 
             const newUsers = Object.values(JSON.parse(JSON.stringify(r)));
 
-            const newTargetUser = newUsers.find((user) => +user.id === +id);
+            const myNewData = newUsers.find((user) => +user.id === +myId);
+            const addresseeNewData = newUsers.find((user) => +user.id === +id);
 
-            io.to('update').emit('db', newTargetUser.JSON);
+            io.to('update').emit(
+              'me',
+              JSON.stringify({ id: myId, JSON: myNewData.JSON }),
+            );
+            io.to('update').emit(
+              'addressee',
+              JSON.stringify({ id, JSON: addresseeNewData.JSON }),
+            );
           });
 
-          return res.status(200).json(myData);
+          return res.status(200).json('myData');
         },
       );
     });
@@ -244,16 +252,13 @@ router.put('/api/touched', async (req, res) => {
       `${dbService.updateDb(id, JSON)} SELECT * FROM users`,
       (error) => {
         if (error) throw new Error(error);
-
         connection.query('SELECT * FROM users', (e, r) => {
           if (e) throw new Error(e);
 
-          const newTargetUser = r.find((user) => +user.id === +id);
+          const targetUser = r.find((user) => +user.id === +id);
 
-          io.to('update').emit('db', newTargetUser.JSON);
+          return res.status(200).json(targetUser.JSON);
         });
-
-        return res.status(200).json('Set touched');
       },
     );
   } catch (error) {

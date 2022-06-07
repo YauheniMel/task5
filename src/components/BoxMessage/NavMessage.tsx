@@ -9,8 +9,8 @@ import ModalComponent from '../Modal/Modal';
 
 const NavMessages: React.FC<any> = function ({
   messages = [],
-  count,
   setTouched,
+  data,
 }) {
   const [isOpen, setIsOpen] = React.useState(false);
   const [open, setOpen] = React.useState<boolean>();
@@ -29,6 +29,19 @@ const NavMessages: React.FC<any> = function ({
   };
   const handleClose = () => setOpen(false);
 
+  function countReceivedMessages(arr: any): number {
+    let counter = 0;
+    if (!arr.length) return counter;
+    arr.forEach((item: any) => {
+      if (item.received) {
+        counter += item.received.filter(
+          (msg: any) => msg.state === 'untouched',
+        ).length;
+      }
+    });
+
+    return counter;
+  }
   // eslint-disable-next-line @typescript-eslint/no-shadow
   const toggleDrawer = (open: boolean) => () => {
     setIsOpen(open);
@@ -42,12 +55,15 @@ const NavMessages: React.FC<any> = function ({
       onKeyDown={toggleDrawer(false)}
     >
       <List>
-        {messages.map((msg: any) => (
-          <>
-            <Button onClick={handleOpen}>{msg.name}</Button>
-            <hr />
-          </>
-        ))}
+        {messages.map((msg: any) => {
+          if (!msg.received.length) return null;
+          return (
+            <>
+              <Button onClick={handleOpen}>{msg.name}</Button>
+              <hr />
+            </>
+          );
+        })}
       </List>
     </Box>
   );
@@ -56,11 +72,12 @@ const NavMessages: React.FC<any> = function ({
     <div>
       <IconButton
         onClick={toggleDrawer(true)}
+        disabled={!countReceivedMessages(data)}
         aria-label="show 4 new mails"
         color="inherit"
       >
-        <Badge badgeContent={count} color="secondary">
-          <MailIcon />
+        <Badge badgeContent={countReceivedMessages(data)} color="secondary">
+          <MailIcon sx={{ fontSize: 30 }} />
         </Badge>
       </IconButton>
       <Drawer anchor="right" open={isOpen} onClose={toggleDrawer(false)}>
