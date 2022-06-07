@@ -245,6 +245,14 @@ router.put('/api/touched', async (req, res) => {
       (error) => {
         if (error) throw new Error(error);
 
+        connection.query('SELECT * FROM users', (e, r) => {
+          if (e) throw new Error(e);
+
+          const newTargetUser = r.find((user) => +user.id === +id);
+
+          io.to('update').emit('db', newTargetUser.JSON);
+        });
+
         return res.status(200).json('Set touched');
       },
     );
