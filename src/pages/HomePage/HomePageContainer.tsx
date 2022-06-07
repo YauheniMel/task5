@@ -1,8 +1,10 @@
-import React, { FC } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import { connect } from 'react-redux';
+import { io } from 'socket.io-client';
 import {
   sendMessageThunk,
   setTouchedMsgThunk,
+  getDataAction,
 } from '../../redux/reducers/auth-reducer';
 import HomePage from './HomePage';
 
@@ -13,7 +15,48 @@ const HomePageContainer: FC<any> = function ({
   id,
   users,
   setTouchedMsg,
+  getData,
 }) {
+  const socket = io('http://localhost:5000');
+  const [newData, setNewData] = useState();
+  const [newUsers, setNewUsers] = useState();
+
+  useEffect(() => {
+    // eslint-disable-next-line @typescript-eslint/no-shadow
+    socket.on('users', (data: any) => setNewUsers(data));
+    // eslint-disable-next-line @typescript-eslint/no-shadow
+    socket.on('db', (data: any) => setNewData(data));
+    // if (newUsers) {
+
+    console.log(`SENT ${newData}`);
+    console.log(`LOGIN ${newUsers}`);
+    //   const [targetUser] = JSON.parse(newUsers).filter(
+    //     (user: UserType) => user.id === id,
+    //   );
+    //   updateUsers(
+    //     JSON.parse(newUsers).filter((user: UserType) => user.id !== id),
+    //   );
+    //   if (!targetUser) {
+    //     // eslint-disable-next-line @typescript-eslint/no-use-before-define
+    //     window.addEventListener('click', handlePolicy, {
+    //       capture: true,
+    //       once: true,
+    //     });
+    //   } else if (targetUser.state === 'blocked') {
+    //     // eslint-disable-next-line @typescript-eslint/no-use-before-define
+    //     window.addEventListener('click', handlePolicy, {
+    //       capture: true,
+    //       once: true,
+    //     });
+    //   }
+    // }
+    if (newData) {
+      getData({ db: JSON.parse(newData) });
+    } else if (newUsers) {
+      getData({ users: JSON.parse(newUsers) });
+    }
+  }, [newData, newUsers]);
+
   return (
     <HomePage
       name={name}
@@ -35,6 +78,7 @@ const mapStateToProps = (state: any) => ({
 const mapDispatchToProps = (dispatch: any) => ({
   sendMessage: (data: any) => dispatch(sendMessageThunk(data)),
   setTouchedMsg: (data: any) => dispatch(setTouchedMsgThunk(data)),
+  getData: (data: any) => dispatch(getDataAction(data)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(HomePageContainer);

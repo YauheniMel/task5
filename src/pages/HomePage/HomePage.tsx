@@ -20,7 +20,7 @@ const HomePage: FC<any> = function HomePage({
     if (!arr.length) return counter;
     arr.forEach((item: any) => {
       // eslint-disable-next-line eqeqeq
-      if (item.id == id) {
+      if (item.id == id && item.sent) {
         counter += item.sent.filter(
           (msg: any) => msg.state === 'untouched',
         ).length;
@@ -50,7 +50,6 @@ const HomePage: FC<any> = function HomePage({
       }
       return elem;
     });
-    console.log(db);
 
     setTouchedMsg({ id, JSON: JSON.stringify(db) });
 
@@ -59,8 +58,11 @@ const HomePage: FC<any> = function HomePage({
 
   function prepareMessagesInfo(arr: any) {
     return arr.map((item: any) => {
+      // // eslint-disable-next-line no-debugger
+      // debugger;
+
       // eslint-disable-next-line no-param-reassign
-      item.name = users.find((item2: any) => +item2.id === +item.id).name;
+      item.name = users?.find((item2: any) => +item2.id === +item.id).name;
       // eslint-disable-next-line eqeqeq
       if (item.id == id) {
         // eslint-disable-next-line no-param-reassign
