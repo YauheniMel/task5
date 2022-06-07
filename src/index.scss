@@ -36,3 +36,12 @@ button {
     text-decoration: underline;
   }
 }
+
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: $primary-color-light;
+}

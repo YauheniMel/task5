@@ -1,9 +1,8 @@
 import * as React from 'react';
 import Box from '@mui/material/Box';
 import Drawer from '@mui/material/Drawer';
-import Button from '@mui/material/Button';
 import List from '@mui/material/List';
-import { Badge, IconButton } from '@mui/material';
+import { Badge, IconButton, ListItemButton } from '@mui/material';
 import MailIcon from '@mui/icons-material/Mail';
 import ModalComponent from '../Modal/Modal';
 
@@ -14,18 +13,16 @@ const NavMessages: React.FC<any> = function ({
 }) {
   const [isOpen, setIsOpen] = React.useState(false);
   const [open, setOpen] = React.useState<boolean>();
-  const [newMessages, setNewMessages] = React.useState();
+  const [newMessages, setNewMessages] = React.useState<any>();
 
   const handleOpen = (e: any) => {
     setOpen(true);
-    const msg = messages.find((elem: any) => {
-      const { name } = elem;
 
-      return name.toUpperCase() === e.target.innerText;
+    messages.forEach((msg: any) => {
+      if (msg.name.toUpperCase() === e.target.innerText.toUpperCase()) {
+        setNewMessages({ name: msg.name, id: msg.id, received: msg.received });
+      }
     });
-    setNewMessages(msg);
-
-    setTouched(msg);
   };
   const handleClose = () => setOpen(false);
 
@@ -49,7 +46,7 @@ const NavMessages: React.FC<any> = function ({
 
   const list = () => (
     <Box
-      sx={{ width: '16vw' }}
+      sx={{ width: '16vw', minWidth: 150 }}
       role="presentation"
       onClick={toggleDrawer(false)}
       onKeyDown={toggleDrawer(false)}
@@ -58,10 +55,9 @@ const NavMessages: React.FC<any> = function ({
         {messages.map((msg: any) => {
           if (!msg.received.length) return null;
           return (
-            <>
-              <Button onClick={handleOpen}>{msg.name}</Button>
-              <hr />
-            </>
+            <ListItemButton key={msg.id} onClick={handleOpen}>
+              {msg.name}
+            </ListItemButton>
           );
         })}
       </List>
@@ -84,6 +80,7 @@ const NavMessages: React.FC<any> = function ({
         {messages.length && list()}
       </Drawer>
       <ModalComponent
+        setTouched={setTouched}
         handleClose={handleClose}
         open={open}
         newMessages={newMessages}

@@ -16,12 +16,17 @@ const HomePage: FC<any> = function HomePage({
   setTouchedMsg,
 }) {
   function setTouched(newData: any) {
-    // eslint-disable-next-line array-callback-return
     const db = data.map((elem: any) => {
       if (+elem.id === +newData.id) {
         const n = elem.received.map((msg: any) => {
-          // eslint-disable-next-line no-param-reassign
-          msg.state = 'touched';
+          if (
+            newData.received.find(
+              (touchedMsg: any) => +touchedMsg.date === +msg.date,
+            )
+          ) {
+            // eslint-disable-next-line no-param-reassign
+            msg.state = 'touched';
+          }
           return msg;
         });
         // eslint-disable-next-line no-param-reassign
@@ -29,7 +34,6 @@ const HomePage: FC<any> = function HomePage({
       }
       return elem;
     });
-
     setTouchedMsg({ id, JSON: JSON.stringify(db) });
   }
 

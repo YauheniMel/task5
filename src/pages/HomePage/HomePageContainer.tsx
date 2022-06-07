@@ -26,6 +26,7 @@ const HomePageContainer: FC<any> = function ({
     socket.on('users', (data: any) => setNewUsers(data));
     // eslint-disable-next-line @typescript-eslint/no-shadow
     socket.on('db', (data: any) => setNewData(data));
+
     // eslint-disable-next-line @typescript-eslint/no-shadow
     socket.on('me', (data: any) => {
       const { id: resId, JSON: json } = JSON.parse(data);
