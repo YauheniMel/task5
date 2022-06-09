@@ -55,7 +55,17 @@ const NavMessages: React.FC<any> = function ({
         {messages.map((msg: any) => {
           if (!msg.received.length) return null;
           return (
-            <ListItemButton key={msg.id} onClick={handleOpen}>
+            <ListItemButton
+              style={{
+                backgroundColor: msg.received.find(
+                  (m: any) => m.state === 'untouched',
+                )
+                  ? '#f4eeee'
+                  : 'none',
+              }}
+              key={msg.id}
+              onClick={handleOpen}
+            >
               {msg.name}
             </ListItemButton>
           );
@@ -68,7 +78,6 @@ const NavMessages: React.FC<any> = function ({
     <div>
       <IconButton
         onClick={toggleDrawer(true)}
-        disabled={!countReceivedMessages(data)}
         aria-label="show 4 new mails"
         color="inherit"
       >

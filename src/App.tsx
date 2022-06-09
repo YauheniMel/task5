@@ -2,8 +2,10 @@ import React, { FC, useEffect } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
 import { createTheme, ThemeProvider } from '@mui/material';
 import { connect } from 'react-redux';
+import { ToastContainer } from 'react-toastify';
 import HomePageContainer from './pages/HomePage/HomePageContainer';
 import LoginPageContainer from './pages/LoginPage/LoginPageContainer';
+import 'react-toastify/dist/ReactToastify.css';
 
 const App: FC<any> = function ({ isAuth }) {
   useEffect(() => {}, [isAuth]);
@@ -41,6 +43,18 @@ const App: FC<any> = function ({ isAuth }) {
             }
           />
         </Routes>
+        <ToastContainer
+          progressClassName="toastProgressBar"
+          position="top-center"
+          autoClose={1500}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+        />
       </ThemeProvider>
     </div>
   );

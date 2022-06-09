@@ -15,7 +15,6 @@ const style = {
   overflow: 'scroll',
   bgcolor: 'background.paper',
   boxShadow: 24,
-  p: 4,
 };
 
 const ModalComponent: React.FC<any> = function ({
@@ -25,7 +24,6 @@ const ModalComponent: React.FC<any> = function ({
   setTouched,
 }) {
   const [showMessages, setShowMessages] = React.useState<any>([]);
-  console.log(newMessages);
   function handleClick(id: any) {
     const checkMsg = showMessages.find((ID: any) => +ID === +id);
     let arr = [];
@@ -52,11 +50,14 @@ const ModalComponent: React.FC<any> = function ({
         aria-describedby="modal-modal-description"
       >
         <Box sx={style}>
-          <List sx={{ bgcolor: 'background.paper' }}>
+          <List sx={{ bgcolor: 'background.paper', margin: 1 }}>
             {newMessages?.received.map((msg: any) => (
               // eslint-disable-next-line react/jsx-no-bind
               <ListItem
                 alignItems="flex-start"
+                style={{
+                  backgroundColor: msg.state === 'touched' ? 'none' : '#f4eeee',
+                }}
                 key={msg.date}
                 onClick={() => handleClick(msg.date)}
               >

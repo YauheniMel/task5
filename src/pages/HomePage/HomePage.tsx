@@ -51,7 +51,7 @@ const HomePage: FC<any> = function HomePage({
       return {
         id: item.id,
         name: item.name,
-        received: item.received.filter((msg: any) => msg.state === 'untouched'),
+        received: item.received,
       };
     });
   }

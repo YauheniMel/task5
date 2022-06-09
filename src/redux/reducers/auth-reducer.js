@@ -1,3 +1,4 @@
+import { toast } from 'react-toastify';
 import requestAPI from '../../api/api';
 
 export const loginUserAction = () => ({ type: 'LOGIN-USER' });
@@ -56,15 +57,21 @@ export const loginUserThunk = (name) => (dispatch) => requestAPI
     );
     dispatch(loginUserAction());
   })
-  .catch((err) => alert(err));
+  .catch((err) => toast.error(err));
 
 export const sendMessageThunk = (payload) => (dispatch) => requestAPI
   .sendMessage(payload)
   .then((data) => {
-    dispatch(getDataAction({ id: payload.myId, db: JSON.parse(data.JSON) }));
-    dispatch(loginUserAction());
+    if (typeof data === 'object') {
+      dispatch(
+        getDataAction({ id: payload.myId, db: JSON.parse(data.JSON) }),
+      );
+      dispatch(loginUserAction());
+    } else {
+      toast.success(data);
+    }
   })
-  .catch((err) => alert(err));
+  .catch((err) => toast.error(err));
 
 export const setTouchedMsgThunk = (payload) => () => requestAPI
   .sendTouchedMsg(payload)
@@ -74,6 +81,6 @@ export const setTouchedMsgThunk = (payload) => () => requestAPI
       db: newData,
     });
   })
-  .catch((err) => alert(err));
+  .catch((err) => toast.error(err));
 
 export default authReducer;

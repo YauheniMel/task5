@@ -18,26 +18,24 @@ const HomePageContainer: FC<any> = function ({
   getData,
 }) {
   const socket = io('http://localhost:5000');
-  const [newData, setNewData] = useState();
-  const [newUsers, setNewUsers] = useState();
+  const [newData, setNewData] = useState(null);
+  const [newUsers, setNewUsers] = useState(null);
 
   useEffect(() => {
     // eslint-disable-next-line @typescript-eslint/no-shadow
-    socket.on('users', (data: any) => setNewUsers(data));
-    // eslint-disable-next-line @typescript-eslint/no-shadow
-    socket.on('db', (data: any) => setNewData(data));
+    socket.on('db', (d: any) => setNewData(d));
 
     // eslint-disable-next-line @typescript-eslint/no-shadow
-    socket.on('me', (data: any) => {
-      const { id: resId, JSON: json } = JSON.parse(data);
+    socket.on('me', (d: any) => {
+      const { id: resId, JSON: json } = JSON.parse(d);
 
       if (+resId === +id) {
         setNewData(json);
       }
     });
     // eslint-disable-next-line @typescript-eslint/no-shadow
-    socket.on('addressee', (data: any) => {
-      const { id: resId, JSON: json } = JSON.parse(data);
+    socket.on('addressee', (d: any) => {
+      const { id: resId, JSON: json } = JSON.parse(d);
 
       if (+resId === +id) {
         setNewData(json);
@@ -46,10 +44,17 @@ const HomePageContainer: FC<any> = function ({
 
     if (newData) {
       getData({ db: JSON.parse(newData) });
-    } else if (newUsers) {
+    }
+  }, [newData]);
+
+  useEffect(() => {
+    // eslint-disable-next-line @typescript-eslint/no-shadow
+    socket.on('users', (d: any) => setNewUsers(d));
+
+    if (newUsers) {
       getData({ users: JSON.parse(newUsers) });
     }
-  }, [newData, newUsers]);
+  }, [newUsers]);
 
   return (
     <HomePage
