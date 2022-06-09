@@ -36,3 +36,20 @@ button {
     text-decoration: underline;
   }
 }
+
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: $primary-color-light;
+}
+
+.Toastify__toast {
+  font-size: 1rem;
+}
+
+.Toastify__progress-bar {
+  background: $primary-color-light !important;
+}

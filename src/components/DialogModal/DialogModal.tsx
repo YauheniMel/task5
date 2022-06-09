@@ -36,7 +36,11 @@ const DialogModal: React.FC<any> = function ({
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
-        <form action="" onSubmit={handleSubmit}>
+        <form
+          style={{ display: 'flex', flexDirection: 'column' }}
+          action=""
+          onSubmit={handleSubmit}
+        >
           <InputUser
             data={data}
             setAddressee={setAddressee}

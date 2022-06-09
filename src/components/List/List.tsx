@@ -2,6 +2,8 @@ import * as React from 'react';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import ListSubheader from '@mui/material/ListSubheader';
+import moment from 'moment';
+
 import { List } from '@mui/material';
 
 const ListComponent: React.FC<any> = function ({ data }) {
@@ -10,11 +12,12 @@ const ListComponent: React.FC<any> = function ({ data }) {
       {data?.sent && (
         <List
           sx={{
-            width: '100%',
             bgcolor: 'background.paper',
             position: 'relative',
             overflow: 'auto',
             maxHeight: 200,
+            maxWidth: 410,
+            m: 1,
             '& ul': { padding: 0 },
           }}
           subheader={<li />}
@@ -23,13 +26,12 @@ const ListComponent: React.FC<any> = function ({ data }) {
             // eslint-disable-next-line react/no-array-index-key
             <li key={`section-${idx}`}>
               <ul>
-                <ListSubheader>{`${info.date}`}</ListSubheader>
-                {data.sent.map((item: any, i: any) => (
-                  // eslint-disable-next-line react/no-array-index-key
-                  <ListItem key={`item-${item.date}-${i}`}>
-                    <ListItemText primary={`Item ${item.content}`} />
-                  </ListItem>
-                ))}
+                <ListSubheader sx={{ backgroundColor: '#f4eeee' }}>
+                  {`${moment(info.date).format('DD.MM HH:MM')}`}
+                </ListSubheader>
+                <ListItem key={`item-${info.date}`}>
+                  <ListItemText primary={` ${info.content}`} />
+                </ListItem>
               </ul>
             </li>
           ))}
