@@ -5,6 +5,7 @@ import ListSubheader from '@mui/material/ListSubheader';
 import moment from 'moment';
 
 import { List } from '@mui/material';
+import MDEditor from '@uiw/react-md-editor';
 
 const ListComponent: React.FC<any> = function ({ data }) {
   return (
@@ -30,7 +31,13 @@ const ListComponent: React.FC<any> = function ({ data }) {
                   {`${moment(info.date).format('DD.MM HH:MM')}`}
                 </ListSubheader>
                 <ListItem key={`item-${info.date}`}>
-                  <ListItemText primary={` ${info.content}`} />
+                  {info.md ? (
+                    <MDEditor.Markdown
+                      source={info.content.replace(/&/gim, '\n')}
+                    />
+                  ) : (
+                    <ListItemText primary={` ${info.content}`} />
+                  )}
                 </ListItem>
               </ul>
             </li>

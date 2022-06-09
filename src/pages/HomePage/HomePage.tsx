@@ -2,10 +2,13 @@ import {
   AppBar, IconButton, Toolbar, Typography,
 } from '@mui/material';
 import React, { FC } from 'react';
+import ToggleButton from '@mui/material/ToggleButton';
+import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import ForwardToInboxIcon from '@mui/icons-material/ForwardToInbox';
 import classes from './HomePage.module.scss';
 import DialogModal from '../../components/DialogModal/DialogModal';
 import NavMessages from '../../components/BoxMessage/NavMessage';
+import Editor from '../../components/Editor/Editor';
 
 const HomePage: FC<any> = function HomePage({
   data,
@@ -15,6 +18,16 @@ const HomePage: FC<any> = function HomePage({
   users,
   setTouchedMsg,
 }) {
+  const [alignment, setAlignment] = React.useState('text');
+  const [isOpen, setIsOpen] = React.useState(false);
+
+  const handleChange = (
+    event: React.MouseEvent<HTMLElement>,
+    newAlignment: string,
+  ) => {
+    setAlignment(newAlignment);
+  };
+
   function setTouched(newData: any) {
     const db = data.map((elem: any) => {
       if (+elem.id === +newData.id) {
@@ -56,27 +69,26 @@ const HomePage: FC<any> = function HomePage({
     });
   }
 
-  const [isOpen, setIsOpen] = React.useState(true);
-
   const handleClose = () => {
     setIsOpen(false);
   };
   return (
     <div>
-      <DialogModal
-        id={id}
-        data={data}
-        users={users}
-        isOpen={isOpen}
-        close={handleClose}
-        sendMessage={sendMessage}
-      />
       <AppBar position="static">
         <Toolbar className={classes.toolbar}>
           <div>
             <Typography variant="h6" noWrap>
               {name}
             </Typography>
+            <ToggleButtonGroup
+              color="secondary"
+              value={alignment}
+              sx={{ backgroundColor: '#62727b' }}
+              exclusive
+              onChange={handleChange}
+            >
+              <ToggleButton value="text">Markdown</ToggleButton>
+            </ToggleButtonGroup>
             <IconButton size="large" onClick={() => setIsOpen(true)}>
               <ForwardToInboxIcon color="secondary" sx={{ fontSize: 30 }} />
             </IconButton>
@@ -93,7 +105,18 @@ const HomePage: FC<any> = function HomePage({
             </div>
           </div>
         </Toolbar>
+        <DialogModal
+          id={id}
+          data={data}
+          users={users}
+          isOpen={isOpen}
+          close={handleClose}
+          sendMessage={sendMessage}
+        />
       </AppBar>
+      {alignment === 'text' || (
+        <Editor sendMessage={sendMessage} id={id} users={users} />
+      )}
     </div>
   );
 };

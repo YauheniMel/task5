@@ -102,6 +102,7 @@ router.put('/api/login', async (req, res) => {
             const users = Object.values(JSON.parse(JSON.stringify(r)));
 
             targetUser = users[1].find((user) => user.name === name);
+
             return res.status(200).json(targetUser);
           },
         );
@@ -124,123 +125,261 @@ router.post('/api/send', async (req, res) => {
 
       const users = Object.values(JSON.parse(JSON.stringify(results)));
 
-      // eslint-disable-next-line eqeqeq
+      let addressee;
+      let addresseeData;
+      let addresseeJSON;
       const me = users.find((user) => user.id == myId);
-      // eslint-disable-next-line eqeqeq
-      const addressee = users.find((user) => user.id == id);
-
       const myData = JSON.parse(me.JSON);
+      let myJSON;
 
-      // eslint-disable-next-line eqeqeq
-      const i = myData.findIndex((item) => item.id == id);
-      // eslint-disable-next-line eqeqeq
-      if (i == '-1') {
-        myData.push({
-          id,
-          sent: [
-            {
-              date: +new Date(),
+      if (typeof id === 'object') {
+        const i = [];
+        id.forEach((m) => {
+          const x = myData.findIndex((item) => item.id == m);
+
+          if (x == '-1') {
+            i.push({ id: m });
+          } else {
+            i.push(x);
+          }
+        });
+        const date = +new Date();
+        i.forEach((n) => {
+          if (typeof n === 'object') {
+            myData.push({
+              id: n.id,
+              sent: [
+                {
+                  date,
+                  state: 'untouched',
+                  theme,
+                  content,
+                  md: true,
+                },
+              ],
+            });
+          } else {
+            if (!myData[n].sent) myData[n].sent = [];
+            myData[n].sent.push({
+              date,
               state: 'untouched',
               theme,
               content,
-            },
-          ],
+              md: true,
+            });
+          }
         });
-      } else {
-        if (!myData[i].sent) myData[i].sent = [];
-        myData[i].sent.push({
-          date: +new Date(),
-          state: 'untouched',
-          theme,
-          content,
-        });
-      }
 
-      const addresseeData = JSON.parse(addressee.JSON);
+        const arr = [];
+        id.forEach((k) => {
+          const m = users.find((user) => user.id == k);
 
-      // eslint-disable-next-line eqeqeq
-      const idx = addresseeData.findIndex((item) => item.id == myId);
-      // eslint-disable-next-line eqeqeq
-      if (idx == '-1') {
-        addresseeData.push({
-          id: myId,
-          received: [
-            {
-              date: +new Date(),
+          addresseeData = JSON.parse(m.JSON);
+
+          const idx = addresseeData.findIndex((item) => item.id == myId);
+
+          if (idx == '-1') {
+            addresseeData.push({
+              id: myId,
+              received: [
+                {
+                  date,
+                  state: 'untouched',
+                  theme,
+                  content,
+                  md: true,
+                },
+              ],
+            });
+          } else {
+            if (!addresseeData[idx].received) addresseeData[idx].received = [];
+            addresseeData[idx].received.push({
+              date,
               state: 'untouched',
               theme,
               content,
-            },
-          ],
-        });
-      } else {
-        if (!addresseeData[idx].received) addresseeData[idx].received = [];
-        addresseeData[idx].received.push({
-          date: +new Date(),
-          state: 'untouched',
-          theme,
-          content,
-        });
-      }
+              md: true,
+            });
+          }
 
-      if (!myData[0]) {
-        myData.push({
-          id,
-          sent: [
-            {
-              date: +new Date(),
-              state: 'untouched',
-              theme,
-              content,
-            },
-          ],
-        });
-      }
+          if (!addresseeData[0]) {
+            addresseeData.push({
+              id: myId,
+              received: [
+                {
+                  date,
+                  state: 'untouched',
+                  theme,
+                  content,
+                  md: true,
+                },
+              ],
+            });
+          }
 
-      if (!addresseeData[0]) {
-        addresseeData.push({
-          id: myId,
-          received: [
-            {
-              date: +new Date(),
-              state: 'untouched',
-              theme,
-              content,
-            },
-          ],
-        });
-      }
-
-      const myJSON = JSON.stringify([...myData]);
-      const addresseeJSON = JSON.stringify([...addresseeData]);
-
-      connection.query(
-        `${dbService.updateDb(id, addresseeJSON)}
-        ${dbService.updateDb(myId, myJSON)}`,
-        (error) => {
-          if (error) throw new Error(error);
-
-          connection.query('SELECT * FROM users', (e, r) => {
-            if (e) throw new Error(e);
-
-            const newUsers = Object.values(JSON.parse(JSON.stringify(r)));
-
-            const myNewData = newUsers.find((user) => +user.id === +myId);
-            const addresseeNewData = newUsers.find((user) => +user.id === +id);
-
-            io.to('update').emit(
-              'me',
-              JSON.stringify({ id: myId, JSON: myNewData.JSON }),
-            );
-            io.to('update').emit(
-              'addressee',
-              JSON.stringify({ id, JSON: addresseeNewData.JSON }),
-            );
+          arr.push({
+            id: k,
+            addresseeData: JSON.stringify([...addresseeData]),
           });
+        });
 
-          return res.status(200).send('The message was sent!');
-        },
-      );
+        const command = arr.map((elem) => dbService.updateDb(elem.id, elem.addresseeData));
+        const str = command.join('');
+        myJSON = JSON.stringify([...myData]);
+
+        connection.query(
+          `${str}
+          ${dbService.updateDb(myId, myJSON)}`,
+          (error) => {
+            if (error) throw new Error(error);
+
+            connection.query('SELECT * FROM users', (e, r) => {
+              if (e) throw new Error(e);
+
+              const newUsers = Object.values(JSON.parse(JSON.stringify(r)));
+
+              const myNewData = newUsers.find((user) => +user.id === +myId);
+
+              id.forEach((l) => {
+                const addresseeNewData = newUsers.find(
+                  (user) => +user.id === +l,
+                );
+                io.to('update').emit(
+                  'addressee',
+                  JSON.stringify({ id: l, JSON: addresseeNewData.JSON }),
+                );
+              });
+
+              io.to('update').emit(
+                'me',
+                JSON.stringify({ id: myId, JSON: myNewData.JSON }),
+              );
+            });
+
+            return res.status(200).send('The message was sent!');
+          },
+        );
+      } else {
+        // eslint-disable-next-line eqeqeq
+        const i = myData.findIndex((item) => item.id == id);
+        // eslint-disable-next-line eqeqeq
+        if (i == '-1') {
+          myData.push({
+            id,
+            sent: [
+              {
+                date: +new Date(),
+                state: 'untouched',
+                theme,
+                content,
+                md: false,
+              },
+            ],
+          });
+        } else {
+          if (!myData[i].sent) myData[i].sent = [];
+          myData[i].sent.push({
+            date: +new Date(),
+            state: 'untouched',
+            theme,
+            content,
+            md: false,
+          });
+        }
+
+        if (!myData[0]) {
+          myData.push({
+            id,
+            sent: [
+              {
+                date: +new Date(),
+                state: 'untouched',
+                theme,
+                content,
+                md: false,
+              },
+            ],
+          });
+        }
+
+        myJSON = JSON.stringify([...myData]);
+
+        addressee = users.find((user) => user.id == id);
+        addresseeData = JSON.parse(addressee.JSON);
+
+        const idx = addresseeData.findIndex((item) => item.id == myId);
+
+        if (idx == '-1') {
+          addresseeData.push({
+            id: myId,
+            received: [
+              {
+                date: +new Date(),
+                state: 'untouched',
+                theme,
+                content,
+                md: false,
+              },
+            ],
+          });
+        } else {
+          if (!addresseeData[idx].received) addresseeData[idx].received = [];
+          addresseeData[idx].received.push({
+            date: +new Date(),
+            state: 'untouched',
+            theme,
+            content,
+            md: false,
+          });
+        }
+
+        if (!addresseeData[0]) {
+          addresseeData.push({
+            id: myId,
+            received: [
+              {
+                date: +new Date(),
+                state: 'untouched',
+                theme,
+                content,
+                md: false,
+              },
+            ],
+          });
+        }
+
+        addresseeJSON = JSON.stringify([...addresseeData]);
+
+        connection.query(
+          `${dbService.updateDb(id, addresseeJSON)}
+        ${dbService.updateDb(myId, myJSON)}`,
+          (error) => {
+            if (error) throw new Error(error);
+
+            connection.query('SELECT * FROM users', (e, r) => {
+              if (e) throw new Error(e);
+
+              const newUsers = Object.values(JSON.parse(JSON.stringify(r)));
+
+              const myNewData = newUsers.find((user) => +user.id === +myId);
+              const addresseeNewData = newUsers.find(
+                (user) => +user.id === +id,
+              );
+
+              io.to('update').emit(
+                'me',
+                JSON.stringify({ id: myId, JSON: myNewData.JSON }),
+              );
+              io.to('update').emit(
+                'addressee',
+                JSON.stringify({ id, JSON: addresseeNewData.JSON }),
+              );
+            });
+
+            return res.status(200).send('The message was sent!');
+          },
+        );
+      }
     });
   } catch (err) {
     res.status(400).send(err);
