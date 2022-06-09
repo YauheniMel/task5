@@ -17,9 +17,10 @@ const HomePageContainer: FC<any> = function ({
   setTouchedMsg,
   getData,
 }) {
-  const socket = io('http://localhost:5000');
   const [newData, setNewData] = useState(null);
   const [newUsers, setNewUsers] = useState(null);
+
+  const socket = io('http://localhost:5000');
 
   useEffect(() => {
     // eslint-disable-next-line @typescript-eslint/no-shadow
@@ -41,7 +42,6 @@ const HomePageContainer: FC<any> = function ({
         setNewData(json);
       }
     });
-
     if (newData) {
       getData({ db: JSON.parse(newData) });
     }

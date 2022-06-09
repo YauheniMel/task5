@@ -1,3 +1,4 @@
+/* eslint-disable no-useless-escape */
 import React, { FC, useEffect } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
 import { createTheme, ThemeProvider } from '@mui/material';

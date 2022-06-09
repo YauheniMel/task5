@@ -4,6 +4,7 @@ import Modal from '@mui/material/Modal';
 import {
   List, ListItem, ListItemText, Typography,
 } from '@mui/material';
+import MDEditor from '@uiw/react-md-editor';
 
 const style = {
   position: 'absolute' as 'absolute',
@@ -51,12 +52,35 @@ const ModalComponent: React.FC<any> = function ({
       >
         <Box sx={style}>
           <List sx={{ bgcolor: 'background.paper', margin: 1 }}>
-            {newMessages?.received.map((msg: any) => (
-              // eslint-disable-next-line react/jsx-no-bind
+            {newMessages?.received.map((msg: any) => (msg.md ? (
               <ListItem
                 alignItems="flex-start"
                 style={{
-                  backgroundColor: msg.state === 'touched' ? 'none' : '#f4eeee',
+                  backgroundColor:
+                      msg.state === 'touched' ? 'none' : '#f4eeee',
+                  flexDirection: 'column',
+                }}
+                key={msg.date}
+                onClick={() => handleClick(msg.date)}
+              >
+                <ListItemText
+                  primary={msg.theme}
+                  sx={{ cursor: 'pointer', display: 'block' }}
+                />
+                <MDEditor.Markdown
+                  source={
+                      showMessages.find((id: any) => +id === +msg.date)
+                        ? msg.content.replace(/&/gim, '\n')
+                        : ''
+                    }
+                />
+              </ListItem>
+            ) : (
+              <ListItem
+                alignItems="flex-start"
+                style={{
+                  backgroundColor:
+                      msg.state === 'touched' ? 'none' : '#f4eeee',
                 }}
                 key={msg.date}
                 onClick={() => handleClick(msg.date)}
@@ -74,10 +98,10 @@ const ModalComponent: React.FC<any> = function ({
                         ? msg.content
                         : `${msg.content.slice(0, 3)}...`}
                     </Typography>
-                  )}
+                    )}
                 />
               </ListItem>
-            ))}
+            )))}
           </List>
         </Box>
       </Modal>

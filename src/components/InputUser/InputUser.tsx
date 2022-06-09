@@ -10,8 +10,6 @@ const InputUser: React.FC<any> = function ({
   value,
   users,
 }) {
-  // const [, toggleOpen] = React.useState(false);
-
   const [dialogValue, setDialogValue] = React.useState({
     name: '',
     id: '',
