@@ -3,20 +3,22 @@ const express = require('express');
 const socketIo = require('socket.io');
 const http = require('http');
 const { Router } = require('express');
-// eslint-disable-next-line import/order
-const mysql = require('mysql');
+const mysql = require('mysql2');
 const path = require('path');
+const cors = require('cors');
 const dbService = require('./service-db');
 
 const port = process.env.PORT || 5000;
 
 const app = express();
 
+app.use(cors());
+
 const server = http.createServer(app);
 
 const io = socketIo(server, {
   cors: {
-    origin: '*',
+    origin: 'https://chatting-front.onrender.com',
   },
 });
 
@@ -31,14 +33,21 @@ app.use(
 );
 
 const connection = mysql.createConnection({
-  host: 'localhost',
-  user: 'root',
-  database: 'usersdb2',
-  password: 'melnik123',
+  host: 'bhofd9pyfrb5vpq7sker-mysql.services.clever-cloud.com',
+  user: 'u4ypylfymrcnwcyg',
+  database: 'bhofd9pyfrb5vpq7sker',
+  password: 'CP6MUFqr1kF0TuS6PTrK',
+  connectionLimit: 100,
   multipleStatements: true,
 });
 
-app.use(express.static(path.join(__dirname, '../build')));
+connection.connect((err) => {
+  if (err) {
+    console.log('Error occurred', err);
+  }
+});
+
+app.use(express.static(path.join(__dirname, 'build')));
 
 const router = Router();
 
@@ -46,7 +55,6 @@ router.put('/api/login', async (req, res) => {
   const { name } = req.body;
 
   try {
-    // eslint-disable-next-line consistent-return
     connection.query('SELECT * FROM users', (err, results) => {
       if (err) throw new Error(err);
 
@@ -407,17 +415,17 @@ router.put('/api/touched', async (req, res) => {
   }
 });
 
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../', 'public', 'index.html'));
-});
-
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../', 'public', 'index.html'));
-});
-
 app.use(bodyParser.json());
 
 app.use(router);
+
+app.use(express.static(`${__dirname}./../build`));
+app.use(express.static(`${__dirname}./../build/static/js`));
+app.use(express.static(`${__dirname}./../build/static/css`));
+
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, './../build/index.html'));
+});
 
 server.listen(port, () => {
   console.log(`running on port ${port}`);
