@@ -38,6 +38,8 @@ const connection = mysql.createConnection({
   multipleStatements: true,
 });
 
+app.use(express.static(path.join(__dirname, '../build')));
+
 const router = Router();
 
 router.put('/api/login', async (req, res) => {
@@ -81,7 +83,7 @@ router.put('/api/login', async (req, res) => {
 
               targetUser = newUsers.find((user) => user.name === name);
 
-              io.to('update').emit('users', targetUser.users);
+              io.to('update').emit('users', targetUser?.users);
 
               return res.status(200).json(targetUser);
             });
@@ -236,7 +238,7 @@ router.post('/api/send', async (req, res) => {
             );
           });
 
-          return res.status(200).json('myData');
+          return res.status(200).send('The message was sent!');
         },
       );
     });
@@ -265,6 +267,7 @@ router.put('/api/touched', async (req, res) => {
     res.status(400).send(error);
   }
 });
+
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '../', 'public', 'index.html'));
 });
